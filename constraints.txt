@@ -1,0 +1,54 @@
+1. No two users can share the same User_ID
+Key constraint, use UserID as primary key in table Users
+This constraint is contained in create.sql
+
+2. All sellers and bidders must already exist as users
+Foreign Key constraint, use SellerID in table Item_Seller and BidderID in table Bid as foreign key which references the UserID in table Users
+This constraint is contained in create.sql
+
+3. No two items can share the same Item_ID
+Key constraint, use ItemID as primary key in table Items
+This constraint is contained in create.sql
+
+4. Every bid must correspond to an actual item
+Foreign Key constraint, use ItemID in table Bid as foreign key which references ItemID in table Items
+This constraint is contained in create.sql
+
+5. The items for a given category must all exist.
+Foreign Key constraint, use ItemID in table Item_Category as foreign key which references ItemID in table Items
+This constraint is contained in create.sql
+
+6. An item cannot belong to a particular category more than once.
+Key constraint, use (ItemID, Category) as primary key in table Item_Category
+This constraint is contained in create.sql
+
+7. The end time for an auction must always be after its start time.
+Check constraint, check if the timestamp ends is greater than timestamp started
+This constraint is contained in create.sql
+
+8. The Current_Price of an item must always match the Amount of the most recent bid for that item
+Trigger constraint, check if the Current_Price of an item in table Items is equal to Amount in table Bid with the same ItemID and latest Time
+
+9. A user may not bid on an item he or she is also selling
+Trigger constraint, use a query to get all the BidderID in table Bid for a certain ItemID and check SellerID in table Item_Seller with the same ItemID in the set of BidderID
+
+10. No auction may have two bids at the exact same time.
+Key constraint, use (ItemID, Time) as primary key in table Bid
+
+11. No auction may have a bid before its start time or after its end time
+Trigger constraint, check if Time in table Bid is larger than Started and smaller than Ends in table Items with the same ItemID
+
+12. No user can make a bid of the same amount to the same item more than once
+Key constraint, set (BidderID, Amount) as Unique in table Bid
+
+13. In every auction, the Number_of_Bids attribute corresponds to the actual number of bids for that particular item
+Trigger constraint, query the number of bids for a certain ItemID in table Bid and check if it is equal to Number_of_Bids in table Items with the same ItemID
+
+14. Any new bid for a particular item must have a higher amount than any of the previous bids for that particular item
+Trigger constraint, query the max Amount of a certain ItemID in table Bid and check if the new bid Amount is larger than it
+
+15. All new bids must be placed at the time which matches the current time of your AuctionBase system
+Trigger constraint, query the current time in the table CurrentTime and check if the Time of the new bid is the same as the current time
+
+16. The current time of your AuctionBase system can only advance forward in time, not backward in time
+Trigger constraint, use a query to find the max of the previous Time in table CurrentTime and check if the current time is greater than it
